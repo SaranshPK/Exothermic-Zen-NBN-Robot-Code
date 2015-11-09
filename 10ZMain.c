@@ -20,7 +20,7 @@ task rpm()
 	while(true)
 	{
 		y2 = SensorValue[rpmSensor];
-		currentRPM = (((y2-y1)/360)/(waitTime/60000));
+		currentRPM = (((y2-y1)/360.0)/(waitTime/60000.0));
 		y1 = y2;
 		wait1Msec(waitTime);
 	}
