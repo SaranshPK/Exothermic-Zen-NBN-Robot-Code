@@ -14,16 +14,9 @@
 float nowrpm = 0;
 task rpm()
 {
-}
-
-task main()
-{
-	motor[RightCon] = motor[LeftCon] = 127;
-	motor[RightFlyUp] = motor[RightFlyDown] = motor[LeftFlyUp] = motor[LeftFlyDown] = 127;
 	clearTimer(T1);
 	int y1 = 0;
 	int y2 = 0;
-
 	while(true)
 	{
 		y2 = SensorValue[rpmSensor];
@@ -31,4 +24,10 @@ task main()
 		y1 = y2;
 		wait1Msec(500);
 	}
+}
+
+task main()
+{
+	motor[RightCon] = motor[LeftCon] = 127;
+	motor[RightFlyUp] = motor[RightFlyDown] = motor[LeftFlyUp] = motor[LeftFlyDown] = 127;
 }
