@@ -13,9 +13,6 @@
 
 <<<<<<< HEAD
 float nowrpm = 0;
-task tbh()
-{
-}
 task rpm()
 {
 	clearTimer(T1);
@@ -32,7 +29,6 @@ task rpm()
 
 task main()
 {
-	startTask(rpm);
 	motor[RightCon] = motor[LeftCon] = 127;
 	motor[RightFlyUp] = motor[RightFlyDown] = motor[LeftFlyUp] = motor[LeftFlyDown] = 127;
 =======
