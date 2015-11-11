@@ -1,19 +1,19 @@
 float currentRPM = 0;
 int deadzone = 5;
 
-void Flywheel(int power){
-	if(abs(power) <= deadzone){
+void flywheelInput(int power){
+	if(abs(power) > deadzone){
 		FlyDL.req = FlyUL.req = FlyUR.req = FlyDR.req = power;
 	}
 }
 
 void Conveyor(int power){
-	if(abs(power) <= deadzone){
+	if(abs(power) > deadzone){
 		Con1.req = Con2.req = power;
 	}
 }
 
-task rpm(){
+task RPM(){
 	int y1 = 0;
 	int y2 = 0;
 	int waitTime = 100;
@@ -23,4 +23,8 @@ task rpm(){
 		y1 = y2;
 		wait1Msec(waitTime);
 	}
+}
+
+task Flywheel(){
+
 }

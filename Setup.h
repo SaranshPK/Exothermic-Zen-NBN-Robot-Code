@@ -52,12 +52,12 @@ void slewAverage(){
 }
 
 void slewSend(){
-	for(int i = 1; i <= 10; i++){
+	for(int i = 0; i < 10; i++){
 		motor[i] = Slew[i][0];
 	}
 }
 
-task slewing{
+task SlewManager{
 	float duration = 1.0; //seconds
 	while(true){
 		slewUpdate();
