@@ -16,11 +16,7 @@
 task main()
 {
 	resetSlewArray();
-	// motor
 	Conveyor(127);
-	flywheelPowerInput(127, true);
-	//startTask(SlewManager);
 	startTask(RPM);
-
 	while(true){}
 }

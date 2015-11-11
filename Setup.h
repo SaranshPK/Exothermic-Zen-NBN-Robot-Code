@@ -13,7 +13,7 @@ void resetSlewArray()
 	}
 }
 
-void resetSlewArray(int slewnumber, int value)
+void resetSlewArray(int slewnumber, float value)
 {
 	for(int x = 0;x<SLEW_LENGTH;x++)
 	{
@@ -21,14 +21,14 @@ void resetSlewArray(int slewnumber, int value)
 	}
 }
 
-int slew(int slewnumber, int value)
+float slew(int slewnumber, float value)
 {
 	for(int x = SLEW_LENGTH-2;x>=0;x--)
 	{
 		slewArray[slewnumber][x+1] = slewArray[slewnumber][x];
 	}
 	slewArray[slewnumber][0] = value;
-	int sum = 0;
+	float sum = 0;
 	for(int x = 0;x<SLEW_LENGTH;x++)
 	{
 		sum += slewArray[slewnumber][x];
