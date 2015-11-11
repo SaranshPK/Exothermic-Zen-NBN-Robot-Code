@@ -13,11 +13,14 @@
 #include <Setup.h>
 #include <Movement.h>
 
-task main(){
+task main()
+{
+	resetSlewArray();
 	// motor
-	//Conveyor(127);
-	//flywheelInput(127);
-	startTask(SlewManager);
+	Conveyor(127);
+	flywheelPowerInput(127, true);
+	//startTask(SlewManager);
 	startTask(RPM);
+
 	while(true){}
 }
