@@ -1,18 +1,17 @@
 float currentRPM = 0;
 int deadzone = 5;
-int TargetValue = 0;
+int TargetValue = 2000;
+float mp = 0;
 
-void flywheelPowerInput(int power)
+void FlywheelPower(int power)
 {
-	motor[LeftFlyUp] = motor[LeftFlyDown] = motor[RightFlyUp] = motor[RightFlyDown] = slew(0,power);
-}
-
-void flywheelTargetInput(int target){
+	motor[fly1] = motor[fly2] = motor[fly3] = motor[fly4] = power;
 }
 
 void Conveyor(int power){
-		motor[LeftCon] = motor[RightCon] = 127;
+		motor[LeftCon] = motor[RightCon] = power;
 }
+
 task RPM(){
 	int y1 = 0;
 	int y2 = 0;
@@ -26,17 +25,36 @@ task RPM(){
 	}
 }
 
-task Flywheel()
-{
-	int error;
-	int mp;
+task FlywheelController()
+{ /*
+	int error = 0;
+	int mp = 0;
 	int dropValue = 0;
 	while(true)
 	{
 		error = TargetValue - currentRPM;
-		mp = previous mp +error
+		mp = slew(127);
 		if(sgn(error) != sgn(currentRPM))
 		{
+			resetSlewArray(0,dropValue);
 		}
+
+		mp = dropValue;
+		while()
+	}*/
+	float error = 0;
+	float prevmp = 0;
+	float Kp = 0.0005;
+	while(true)
+	{
+		error = TargetValue - currentRPM;
+		mp = prevmp + (error*Kp);
+		if(mp>127)
+		{
+			mp=127;
+		}
+		prevmp = mp;
+		FlywheelPower(mp);
+		wait1Msec(10);
 	}
 }
