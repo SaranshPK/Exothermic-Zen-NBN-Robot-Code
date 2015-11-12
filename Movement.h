@@ -1,6 +1,6 @@
 float currentRPM = 0;
 int deadzone = 5;
-int TargetValue = 2000;
+int TargetValue = 2650;
 float mp = 0;
 
 void FlywheelPower(int power)
@@ -27,57 +27,64 @@ task RPM(){
 
 task FlywheelController()
 {
-	float error = 0;
-	float prevRPM = 0;
-	float dropValue = 0;
-	for(int tbhIteration = 0; tbhIteration<1; tbhIteration++)
+	while(true)
 	{
+		float error = 0;
+		float prevRPM = 0;
+		float dropValue = 0;
+		for(int tbhIteration = 0; tbhIteration<1; tbhIteration++)
+		{
+			while(true)
+			{
+				error = TargetValue - currentRPM;
+				mp = slew(0,127);
+				FlywheelPower(mp);
+				if(error <= 0)
+				{
+					resetSlewArray(0,dropValue);
+					FlywheelPower(dropValue);
+					break;
+				}
+				prevRPM = currentRPM;
+				wait1Msec(10);
+			}
+			while(currentRPM>=prevRPM&&currentRPM>TargetValue)
+			{
+				prevRPM = currentRPM;
+				wait1Msec(10);
+			}
+			while(currentRPM<=prevRPM)
+			{
+				prevRPM = currentRPM;
+				dropValue = mp = slew(0, 127);
+				FlywheelPower(mp);
+				wait1Msec(10);
+			}
+			error = TargetValue - currentRPM;
+			writeDebugStream("%f", error);
+		}
+		float prevmp = 0;
+		float Kp = 0.0005;
+		resetSlewArray(0,0);
 		while(true)
 		{
 			error = TargetValue - currentRPM;
-			mp = slew(0,127);
-			FlywheelPower(mp);
-			if(error <= 0)
+			if(error>500)
 			{
-				resetSlewArray(0,dropValue);
-				FlywheelPower(dropValue);
 				break;
 			}
-			prevRPM = currentRPM;
-			wait1Msec(10);
-		}
-		while(currentRPM>=prevRPM&&currentRPM>TargetValue)
-		{
-			prevRPM = currentRPM;
-			wait1Msec(10);
-		}
-		while(currentRPM<=prevRPM)
-		{
-			prevRPM = currentRPM;
-			dropValue = mp = slew(0, 127);
+			mp = prevmp + (error*Kp);
+			if(mp>127)
+			{
+				mp=127;
+			}
+			if(mp<50)
+			{
+				mp = 50;
+			}
+			prevmp = mp;
 			FlywheelPower(mp);
 			wait1Msec(10);
 		}
-		error = TargetValue - currentRPM;
-		writeDebugStream("%f", error);
-	}
-	float prevmp = 0;
-	float Kp = 0.0005;
-	resetSlewArray(0,0);
-	while(true)
-	{
-		error = TargetValue - currentRPM;
-		mp = prevmp + (error*Kp);
-		if(mp>127)
-		{
-			mp=127;
-		}
-		if(mp<50)
-		{
-			mp = 50;
-		}
-		prevmp = mp;
-		FlywheelPower(mp);
-		wait1Msec(10);
 	}
 }
