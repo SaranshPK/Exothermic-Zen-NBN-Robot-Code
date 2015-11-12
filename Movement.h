@@ -26,25 +26,44 @@ task RPM(){
 }
 
 task FlywheelController()
-{ /*
-	int error = 0;
-	int mp = 0;
-	int dropValue = 0;
-	while(true)
-	{
-		error = TargetValue - currentRPM;
-		mp = slew(127);
-		if(sgn(error) != sgn(currentRPM))
-		{
-			resetSlewArray(0,dropValue);
-		}
-
-		mp = dropValue;
-		while()
-	}*/
+{
 	float error = 0;
+	float prevRPM = 0;
+	float dropValue = 0;
+	for(int tbhIteration = 0; tbhIteration<1; tbhIteration++)
+	{
+		while(true)
+		{
+			error = TargetValue - currentRPM;
+			mp = slew(0,127);
+			FlywheelPower(mp);
+			if(error <= 0)
+			{
+				resetSlewArray(0,dropValue);
+				FlywheelPower(dropValue);
+				break;
+			}
+			prevRPM = currentRPM;
+			wait1Msec(10);
+		}
+		while(currentRPM>=prevRPM&&currentRPM>TargetValue)
+		{
+			prevRPM = currentRPM;
+			wait1Msec(10);
+		}
+		while(currentRPM<=prevRPM)
+		{
+			prevRPM = currentRPM;
+			dropValue = mp = slew(0, 127);
+			FlywheelPower(mp);
+			wait1Msec(10);
+		}
+		error = TargetValue - currentRPM;
+		writeDebugStream("%f", error);
+	}
 	float prevmp = 0;
 	float Kp = 0.0005;
+	resetSlewArray(0,0);
 	while(true)
 	{
 		error = TargetValue - currentRPM;
@@ -52,6 +71,10 @@ task FlywheelController()
 		if(mp>127)
 		{
 			mp=127;
+		}
+		if(mp<50)
+		{
+			mp = 50;
 		}
 		prevmp = mp;
 		FlywheelPower(mp);
