@@ -13,6 +13,7 @@ void Conveyor(int power){
 }
 
 task RPM(){
+	SensorValue[rpmSensor] = 0;
 	int y1 = 0;
 	int y2 = 0;
 	int waitTime = 200;
@@ -43,33 +44,36 @@ task FlywheelController()
 				{
 					resetSlewArray(0,dropValue);
 					FlywheelPower(dropValue);
+					mp = dropValue;
 					break;
 				}
 				prevRPM = currentRPM;
 				wait1Msec(10);
 			}
-			while(currentRPM>=prevRPM&&currentRPM>TargetValue)
+			while(currentRPM>=prevRPM)
 			{
+				deadzone = 10;
 				prevRPM = currentRPM;
 				wait1Msec(10);
 			}
 			while(currentRPM<=prevRPM)
 			{
 				prevRPM = currentRPM;
-				dropValue = mp = slew(0, 127);
+				mp = mp + 0.7;
+				deadzone = mp;
+				dropValue = mp;
 				FlywheelPower(mp);
 				wait1Msec(10);
 			}
 			error = TargetValue - currentRPM;
-			writeDebugStream("%f", error);
 		}
-		float prevmp = 0;
+		float prevmp = dropValue;
 		float Kp = 0.0005;
 		resetSlewArray(0,0);
 		while(true)
 		{
 			error = TargetValue - currentRPM;
-			if(error>500)
+			if(error>400)
 			{
 				break;
 			}

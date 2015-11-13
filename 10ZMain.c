@@ -1,3 +1,4 @@
+#pragma config(Sensor, in1,    lightRPM,       sensorLineFollower)
 #pragma config(Sensor, dgtl1,  rpmSensor,      sensorQuadEncoder)
 #pragma config(Motor,  port1,           RightCon,      tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(Motor,  port2,           RightDriveFront, tmotorVex393_MC29, openLoop, reversed, driveRight)
@@ -17,7 +18,7 @@
 task main()
 {
 	resetSlewArray();
-	Conveyor(127);
+	//Conveyor(127);
 	startTask(RPM);
 	//FlywheelPower(60);
 	wait10Msec(100);
