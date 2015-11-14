@@ -1,102 +1,153 @@
-float currentRPM = 0;
-int deadzone = 5;
-int TargetValue = 2650;
-float mp = 0;
+#define FW_LOOP_SPEED              25
+
+// Maximum power we want to send to the flywheel motors
+#define FW_MAX_POWER              127
+
+// encoder counts per revolution depending on motor
+#define MOTOR_TPR_QUAD          360.0
+
+long            counter;
+float           ticks_per_rev;
+long            e_current;
+long            e_last;
+
+float           v_current;
+long            v_time;
+
+long            target;
+long            current;
+long            last;
+float           error;
+float           last_error;
+float           gain;
+float           drive;
+float           drive_at_zero;
+long            first_cross;
+float           drive_approx;
+
+long            motor_drive;
 
 void FlywheelPower(int power)
 {
 	motor[fly1] = motor[fly2] = motor[fly3] = motor[fly4] = power;
 }
 
-void Conveyor(int power){
-		motor[LeftCon] = motor[RightCon] = power;
+void SetTarget(int velocity, float predicted_drive )
+{
+	target = velocity;
+	error = target - current;
+	last_error = error;
+	drive_approx  = predicted_drive;
+	first_cross   = 1;
+	drive_at_zero = 0;
 }
 
-task RPM(){
-	SensorValue[rpmSensor] = 0;
-	int y1 = 0;
-	int y2 = 0;
-	int waitTime = 100;
+void CalculateRPM()
+{
+	int delta_ms;
+	int delta_enc;
 	int ratio = 5;
-	while(true){
-		if(abs(TargetValue-currentRPM)<100)
-		{
-			SensorValue[rpmReady] = 1;
+
+	// Get current encoder value
+	e_current = SensorValue[rpmSensor];
+
+	delta_ms   = nSysTime - v_time;
+	v_time = nSysTime;
+
+	delta_enc = (e_current - e_last);
+	e_last = e_current;
+
+	v_current = abs((((delta_enc)*ratio)/360.0)/(delta_ms/60000.0));
+}
+
+void FwControlUpdateVelocityTbh()
+{
+	error = target - current;
+
+	drive =  drive + (error * gain);
+
+	if( drive > 127 )
+		drive = 127;
+	if( drive < 0 )
+		drive = 0;
+
+	if( sgn(error) != sgn(last_error) ) {
+		if( first_cross ) {
+			drive = drive_approx;
+			first_cross = 0;
 		}
 		else
-		{
-			SensorValue[rpmReady] = 0;
+			drive = 0.5 * ( drive + drive_at_zero );
+			drive_at_zero = drive;
 		}
-		y2 = SensorValue[rpmSensor];
-		currentRPM = abs((((y2-y1)*ratio)/360.0)/(waitTime/60000.0));
-		y1 = y2;
-		wait1Msec(waitTime);
-	}
+	last_error = error;
 }
 
 task FlywheelController()
 {
+	SensorValue[rpmSensor] = 0;
+ 	gain = 0.0005;
+
 	while(true)
 	{
-		float error = 0;
-		float prevRPM = 0;
-		float dropValue = 0;
-		for(int tbhIteration = 0; tbhIteration<1; tbhIteration++)
+		counter++;
+		CalculateRPM();
+		current = v_current;
+		FwControlUpdateVelocityTbh() ;
+		motor_drive  = drive;
+
+		FlywheelPower(motor_drive);
+
+		// Run at somewhere between 20 and 50mS
+		wait1Msec(FW_LOOP_SPEED);
+	}
+}
+
+task recoverFromShots()
+{
+	while(true)
+	{
+		if(SensorValue[shotsFired] == 0)
 		{
 			while(true)
 			{
-				error = TargetValue - currentRPM;
-				mp = slew(0,127);
-				FlywheelPower(mp);
-				if(error <= 0)
+				if(SensorValue[shotsFired] == 1)
 				{
-					resetSlewArray(0,dropValue);
-					FlywheelPower(dropValue);
-					mp = dropValue;
+					wait1Msec(250);
+					SetTarget(target, drive_approx);
 					break;
 				}
-				prevRPM = currentRPM;
 				wait1Msec(10);
 			}
-			while(currentRPM>=prevRPM)
-			{
-				deadzone = 10;
-				prevRPM = currentRPM;
-				wait1Msec(10);
-			}
-			while(currentRPM<=prevRPM)
-			{
-				prevRPM = currentRPM;
-				mp = mp + 0.7;
-				deadzone = mp;
-				dropValue = mp;
-				FlywheelPower(mp);
-				wait1Msec(10);
-			}
-			error = TargetValue - currentRPM;
 		}
-		float prevmp = dropValue;
-		float Kp = 0.005;
-		resetSlewArray(0,0);
-		while(true)
+		wait1Msec(10);
+	}
+}
+
+void Conveyor(int power)
+{
+	motor[LeftCon] = motor[RightCon] = power;
+}
+
+task driverControl()
+{
+	while(true)
+	{
+		if(vexRT[Ch2] > 5)
 		{
-			error = TargetValue - currentRPM;
-			if(error>400)
-			{
-				break;
-			}
-			mp = prevmp + (error*Kp);
-			if(mp>127)
-			{
-				mp=127;
-			}
-			if(mp<50)
-			{
-				mp = 50;
-			}
-			prevmp = mp;
-			FlywheelPower(mp);
-			wait1Msec(10);
+			motor[RightDriveBack] = motor[RightDriveFront] = vexRT[Ch2];
+		}
+		else
+		{
+			motor[RightDriveBack] = motor[RightDriveFront] = 0;
+		}
+		if(vexRT[Ch3] > 5)
+		{
+			motor[LeftDriveBack] = motor[LeftDriveFront] = vexRT[Ch3];
+		}
+		else
+		{
+			motor[LeftDriveBack] = motor[LeftDriveFront] = 0;
 		}
 	}
 }
