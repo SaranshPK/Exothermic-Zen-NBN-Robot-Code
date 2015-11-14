@@ -29,23 +29,12 @@ void setUp()
 task main()
 {
 	setUp();
+	Conveyor(127);
 	startTask(FlywheelController);
 	startTask(recoverFromShots);
-	SetTarget(2700,63);
-	wait1Msec(5000);
-	Conveyor(127);
-	wait1Msec(500);
-	Conveyor(0);
-	wait1Msec(2000);
-	Conveyor(127);
-	wait1Msec(500);
-	Conveyor(0);
-	wait1Msec(2000);
-	Conveyor(127);
-	wait1Msec(500);
-	Conveyor(0);
-	wait1Msec(2000);
-	Conveyor(127);
-	wait1Msec(500);
-	Conveyor(0);
+	SetTarget(2650,65);
+	while(true)
+	{
+		wait1Msec(10);
+	}
 }

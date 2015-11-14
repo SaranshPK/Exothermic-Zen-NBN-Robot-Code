@@ -133,7 +133,7 @@ task driverControl()
 {
 	while(true)
 	{
-		if(vexRT[Ch2] > 5)
+		if(abs(vexRT[Ch2]) > 5)
 		{
 			motor[RightDriveBack] = motor[RightDriveFront] = vexRT[Ch2];
 		}
@@ -141,7 +141,7 @@ task driverControl()
 		{
 			motor[RightDriveBack] = motor[RightDriveFront] = 0;
 		}
-		if(vexRT[Ch3] > 5)
+		if(abs(vexRT[Ch3]) > 5)
 		{
 			motor[LeftDriveBack] = motor[LeftDriveFront] = vexRT[Ch3];
 		}
@@ -149,6 +149,7 @@ task driverControl()
 		{
 			motor[LeftDriveBack] = motor[LeftDriveFront] = 0;
 		}
+		wait1Msec(10);
 	}
 }
 
@@ -174,14 +175,49 @@ task conveyorControl()
 {
 	while(true)
 	{
-		if(vexRT[Btn6U] == 1||vexRT[Btn6U] == 1)
+		if(vexRT[Btn6U] == 1||vexRT[Btn5U] == 1)
 		{
 			Conveyor(127);
-			while(vexRT[Btn6U] == 1||vexRT[Btn6U] == 1)
+			while(vexRT[Btn6U] == 1||vexRT[Btn5U] == 1)
 			{
 				wait1Msec(10);
 			}
 			Conveyor(0);
 		}
+		if(vexRT[Btn6D] == 1||vexRT[Btn5D] == 1)
+		{
+			Conveyor(-127);
+			while(vexRT[Btn6D] == 1||vexRT[Btn5D] == 1)
+			{
+				wait1Msec(10);
+			}
+			Conveyor(0);
+		}
+	}
+}
+
+task targetAdjustment()
+{
+	while(true)
+	{
+		if(vexRT[Btn7D] == 1)
+		{
+			while(vexRT[Btn7D] == 1)
+			{
+				wait1Msec(10);
+			}
+			driverTarget -= 25;
+			SetTarget(driverTarget, 65);
+		}
+		if(vexRT[Btn7U] == 1)
+		{
+			while(vexRT[Btn7D] == 1)
+			{
+				wait1Msec(10);
+			}
+			driverTarget += 25;
+			SetTarget(driverTarget, 65);
+		}
+		wait1Msec(10);
 	}
 }

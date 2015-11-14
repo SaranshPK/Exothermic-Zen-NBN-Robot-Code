@@ -21,6 +21,7 @@
 #pragma userControlDuration(120)
 
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
+int driverTarget = 2600;
 #include <Movement.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -56,19 +57,27 @@ void pre_auton()
 
 task autonomous()
 {
+	//8.3 battery working
 	setUp();
 	startTask(FlywheelController);
 	startTask(recoverFromShots);
-	SetTarget(2600,63);
-	wait1Msec(4000);
+	SetTarget(2700,63);
+	wait1Msec(5000);
 	Conveyor(127);
-	wait1Msec(300);
+	wait1Msec(500);
 	Conveyor(0);
 	wait1Msec(2000);
 	Conveyor(127);
-	wait1Msec(300);
+	wait1Msec(500);
 	Conveyor(0);
-
+	wait1Msec(2000);
+	Conveyor(127);
+	wait1Msec(500);
+	Conveyor(0);
+	wait1Msec(2000);
+	Conveyor(127);
+	wait1Msec(500);
+	Conveyor(0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -86,25 +95,28 @@ task usercontrol()
 	setUp();
 	startTask(driverControl);
 	startTask(conveyorControl);
+	startTask(targetAdjustment);
 	while(true)
 	{
-		if(vexRT[Btn8D] != 1)
+		while(vexRT[Btn8D] == 0)
 		{
-			while(vexRT[Btn8D] == 1)
-			{}
-			clicked = !clicked;
-			if(clicked)
-			{
-				startTask(FlywheelController);
-				startTask(recoverFromShots);
-				SetTarget(2600, 63);
-			}
-			else
-			{
-				stopTask(FlywheelController);
-				stopTask(recoverFromShots);
-			}
+			wait1Msec(10);
 		}
-		wait1Msec(10);
+		while(vexRT[Btn8D] == 1)
+		{
+			wait1Msec(10);
+		}
+
+		clicked = !clicked;
+		if(clicked)
+		{
+			startTask(FlywheelController);
+			startTask(recoverFromShots);
+			SetTarget(driverTarget, 65);
+		}
+		else
+		{
+			SetTarget(0, 0);
+		}
 	}
 }
