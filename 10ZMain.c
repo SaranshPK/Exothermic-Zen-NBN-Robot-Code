@@ -1,5 +1,6 @@
 #pragma config(Sensor, in1,    lightRPM,       sensorLineFollower)
 #pragma config(Sensor, dgtl1,  rpmSensor,      sensorQuadEncoder)
+#pragma config(Sensor, dgtl3,  rpmReady,       sensorDigitalOut)
 #pragma config(Motor,  port1,           RightCon,      tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(Motor,  port2,           RightDriveFront, tmotorVex393_MC29, openLoop, reversed, driveRight)
 #pragma config(Motor,  port3,           RightDriveBack, tmotorVex393_MC29, openLoop, reversed, driveRight)
@@ -17,10 +18,11 @@
 
 task main()
 {
+	SensorValue[rpmReady] = 0;
 	resetSlewArray();
-	//Conveyor(127);
+	Conveyor(127);
 	startTask(RPM);
-	//FlywheelPower(60);
+	//FlywheelPower(100);
 	wait10Msec(100);
 	startTask(FlywheelController);
 	while(true){}

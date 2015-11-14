@@ -16,9 +16,17 @@ task RPM(){
 	SensorValue[rpmSensor] = 0;
 	int y1 = 0;
 	int y2 = 0;
-	int waitTime = 200;
+	int waitTime = 100;
 	int ratio = 5;
 	while(true){
+		if(abs(TargetValue-currentRPM)<100)
+		{
+			SensorValue[rpmReady] = 1;
+		}
+		else
+		{
+			SensorValue[rpmReady] = 0;
+		}
 		y2 = SensorValue[rpmSensor];
 		currentRPM = abs((((y2-y1)*ratio)/360.0)/(waitTime/60000.0));
 		y1 = y2;
@@ -68,7 +76,7 @@ task FlywheelController()
 			error = TargetValue - currentRPM;
 		}
 		float prevmp = dropValue;
-		float Kp = 0.0005;
+		float Kp = 0.005;
 		resetSlewArray(0,0);
 		while(true)
 		{
