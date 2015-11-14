@@ -151,3 +151,37 @@ task driverControl()
 		}
 	}
 }
+
+task rpmIndicator()
+{
+	while(true)
+	{
+		if(error<300)
+		{
+			SensorValue[rpmReady] = 0;
+			SensorValue[rpmNotReady] = 1;
+		}
+		else
+		{
+			SensorValue[rpmReady] = 1;
+			SensorValue[rpmNotReady] = 0;
+		}
+		wait1Msec(10);
+	}
+}
+
+task conveyorControl()
+{
+	while(true)
+	{
+		if(vexRT[Btn6U] == 1||vexRT[Btn6U] == 1)
+		{
+			Conveyor(127);
+			while(vexRT[Btn6U] == 1||vexRT[Btn6U] == 1)
+			{
+				wait1Msec(10);
+			}
+			Conveyor(0);
+		}
+	}
+}
