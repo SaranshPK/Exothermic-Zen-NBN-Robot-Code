@@ -206,7 +206,7 @@ task targetAdjustment()
 			{
 				wait1Msec(10);
 			}
-			driverTarget -= 25;
+			driverTarget -= 10;
 			SetTarget(driverTarget, 65);
 		}
 		if(vexRT[Btn7U] == 1)
@@ -215,7 +215,7 @@ task targetAdjustment()
 			{
 				wait1Msec(10);
 			}
-			driverTarget += 25;
+			driverTarget += 10;
 			SetTarget(driverTarget, 65);
 		}
 		wait1Msec(10);

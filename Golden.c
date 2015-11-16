@@ -21,7 +21,7 @@
 #pragma userControlDuration(120)
 
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
-int driverTarget = 2600;
+int driverTarget = 2610;
 #include <Movement.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +61,7 @@ task autonomous()
 	setUp();
 	startTask(FlywheelController);
 	startTask(recoverFromShots);
+	startTask(rpmIndicator);
 	SetTarget(2700,63);
 	wait1Msec(5000);
 	Conveyor(127);
@@ -76,8 +77,8 @@ task autonomous()
 	Conveyor(0);
 	wait1Msec(2000);
 	Conveyor(127);
-	wait1Msec(500);
-	Conveyor(0);
+	while(true)
+	{}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +101,33 @@ task usercontrol()
 	{
 		while(vexRT[Btn8D] == 0)
 		{
+			if(vexRT[Btn8L] == 1)
+			{
+				while(vexRT[Btn8L] == 1)
+				{
+					wait1Msec(10);
+				}
+				driverTarget = 2650;
+				SetTarget(driverTarget, 65);
+			}
+			if(vexRT[Btn8U] == 1)
+			{
+				while(vexRT[Btn8U] == 1)
+				{
+					wait1Msec(10);
+				}
+				driverTarget = 2200;
+				SetTarget(driverTarget, 50);
+			}
+			if(vexRT[Btn8R] == 1)
+			{
+				while(vexRT[Btn8R] == 1)
+				{
+					wait1Msec(10);
+				}
+				driverTarget = 1000;
+				SetTarget(driverTarget, 30);
+			}
 			wait1Msec(10);
 		}
 		while(vexRT[Btn8D] == 1)
