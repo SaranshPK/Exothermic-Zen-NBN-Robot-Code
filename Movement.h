@@ -66,10 +66,13 @@ void FwControlUpdateVelocityTbh()
 
 	drive =  drive + (error * gain);
 
+	if( first_cross )
+		drive = sgn(error) * 127;
 	if( drive > 127 )
 		drive = 127;
 	if( drive < 0 )
 		drive = 0;
+
 
 	if( sgn(error) != sgn(last_error) ) {
 		if( first_cross ) {
@@ -126,7 +129,7 @@ task recoverFromShots()
 
 void Conveyor(int power)
 {
-	motor[LeftCon] = motor[RightCon] = power;
+	motor[LeftCon] = motor[RightCon] = -power;
 }
 
 task driverControl()
@@ -207,7 +210,7 @@ task targetAdjustment()
 				wait1Msec(10);
 			}
 			driverTarget -= 10;
-			SetTarget(driverTarget, 65);
+			SetTarget(driverTarget, 73);
 		}
 		if(vexRT[Btn7U] == 1)
 		{
@@ -216,7 +219,7 @@ task targetAdjustment()
 				wait1Msec(10);
 			}
 			driverTarget += 10;
-			SetTarget(driverTarget, 65);
+			SetTarget(driverTarget, 73);
 		}
 		wait1Msec(10);
 	}
