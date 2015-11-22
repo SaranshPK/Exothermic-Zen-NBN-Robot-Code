@@ -64,7 +64,7 @@ task autonomous()
 	startTask(FlywheelController);
 	startTask(recoverFromShots);
 	startTask(rpmIndicator);
-	SetTarget(2700,85);
+	SetTarget(2610,85);
 	wait1Msec(5000);
 	Conveyor(127);
 	wait1Msec(500);
@@ -99,6 +99,8 @@ task usercontrol()
 	startTask(driverControl);
 	startTask(conveyorControl);
 	startTask(targetAdjustment);
+	driverTarget = 2610;
+	SetTarget(driverTarget, 85);
 	while(true)
 	{
 		while(vexRT[Btn8D] == 0)
@@ -118,7 +120,7 @@ task usercontrol()
 				{
 					wait1Msec(10);
 				}
-				driverTarget = 2200;
+				driverTarget = 1800;
 				SetTarget(driverTarget, 50);
 			}
 			if(vexRT[Btn8R] == 1)
